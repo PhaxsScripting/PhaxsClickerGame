@@ -5,6 +5,24 @@
   <title>Clicker game</title>
 </head>
 
+  <!-- Admin Panel -->
+<div id="adminPanel" style="display:none; position:fixed; top:50px; right:50px; width:300px; background:#111; color:white; padding:20px; border-radius:10px; z-index:9999;">
+  <h2>Admin Panel</h2>
+  <input id="adminCodeInput" placeholder="Enter Secret Code" style="width:100%; margin-bottom:10px;">
+  <button onclick="unlockAdmin()">Unlock</button>
+
+  <div id="adminControls" style="display:none; margin-top:15px;">
+    <button onclick="setMoney(1000000)">Set 1M Money</button>
+    <button onclick="addMoney(50000)">Add 50K</button>
+    <button onclick="setClickPower(1000)">Set Click Power 1000</button>
+    <button onclick="toggleAutoClicker()">Toggle OP AutoClicker</button>
+    <button onclick="maxUpgrades()">Max Upgrades</button>
+    <button onclick="resetGame()">Reset Game</button>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+
 <body>
   <div id="content"></div>
   <script src="bundle.js"></script>
