@@ -1,23 +1,8 @@
-// =============================
-// PHAXS ADMIN SYSTEM
-// =============================
-
 const SECRET_CODE = "67";
-
 let adminUnlocked = false;
-
-let infiniteInterval = null;
-let slowInfiniteInterval = null;
-let fastInfiniteInterval = null;
-let autoClickInterval = null;
-let superAutoInterval = null;
-let ultraAutoInterval = null;
-
 let clickMultiplier = 1;
+let intervals = [];
 
-// =============================
-// PANEL TOGGLE
-// =============================
 document.addEventListener("keydown", function(e) {
     if (e.key === "`") {
         const panel = document.getElementById("adminPanel");
@@ -26,16 +11,10 @@ document.addEventListener("keydown", function(e) {
     }
 });
 
-// =============================
-// GET REACT GAME
-// =============================
 function getGame() {
     return window.reactClicker || null;
 }
 
-// =============================
-// 🔓 PUBLIC RESET ALL
-// =============================
 function resetAll() {
     const game = getGame();
     if (!game) return;
@@ -45,227 +24,208 @@ function resetAll() {
         upgrades: game.state.upgrades.map(() => 0)
     });
 
-    alert("Game Fully Reset");
+    intervals.forEach(i => clearInterval(i));
+    intervals = [];
+    alert("Game Reset");
 }
 
-// =============================
-// UNLOCK
-// =============================
 function unlockAdmin() {
     const input = document.getElementById("adminCodeInput").value;
-
     if (input === SECRET_CODE) {
         adminUnlocked = true;
         document.getElementById("adminControls").style.display = "block";
-        alert("Admin Access Granted");
-    } else {
-        alert("Wrong Code");
+        alert("Admin Unlocked");
     }
 }
 
-// =============================
-// MONEY MODS (LOCKED)
-// =============================
-function addMoney(amount) {
+const modList = [
+
+    // Economy Mods
+    () => modifyClicks(1000000),
+    () => multiplyClicks(5),
+    () => divideClicks(2),
+    () => randomizeClicks(),
+    () => bankrupt(),
+    () => gamble(),
+    () => drainOverTime(),
+    () => explodeClicks(),
+    () => reverseClicks(),
+    () => freezeClicks(),
+    () => chaoticMoney(),
+    () => massiveSpike(),
+    () => slowDecay(),
+    () => fastDecay(),
+    () => tripleRandom(),
+    () => halveRandom(),
+    () => percentageBoost(250),
+    () => percentageBoost(-50),
+    () => prestigeBlast(),
+    () => nanoBoost(),
+
+    // Upgrade Mods
+    () => maxUpgrades(),
+    () => wipeUpgrades(),
+    () => randomizeUpgrades(),
+    () => duplicateUpgrades(),
+    () => corruptUpgrades(),
+    () => boostUpgrades(),
+    () => drainUpgrades(),
+    () => invertUpgrades(),
+    () => spikeUpgrades(),
+    () => chaosUpgrades(),
+
+    // Time Mods
+    () => speedGame(10),
+    () => speedGame(0.5),
+    () => rapidFire(),
+    () => superRapid(),
+    () => ultraRapid(),
+    () => tickStorm(),
+    () => timeWarp(),
+    () => stutterMode(),
+
+];
+
+// Duplicate with variations to exceed 100
+while (modList.length < 110) {
+    modList.push(() => {
+        const game = getGame();
+        if (!game) return;
+        game.setState(prev => ({
+            clicks: prev.clicks + Math.floor(Math.random() * 100000)
+        }));
+    });
+}
+
+function runRandomMod() {
     if (!adminUnlocked) return;
+    const mod = modList[Math.floor(Math.random() * modList.length)];
+    mod();
+}
+
+function modifyClicks(amount) {
     const game = getGame();
     if (!game) return;
+    game.setState(prev => ({ clicks: prev.clicks + amount }));
+}
 
+function multiplyClicks(mult) {
+    const game = getGame();
+    if (!game) return;
+    game.setState(prev => ({ clicks: prev.clicks * mult }));
+}
+
+function divideClicks(div) {
+    const game = getGame();
+    if (!game) return;
+    game.setState(prev => ({ clicks: Math.floor(prev.clicks / div) }));
+}
+
+function randomizeClicks() {
+    const game = getGame();
+    if (!game) return;
+    game.setState({ clicks: Math.floor(Math.random() * 100000000) });
+}
+
+function bankrupt() { modifyClicks(-999999999); }
+
+function gamble() {
+    const game = getGame();
+    if (!game) return;
+    if (Math.random() > 0.5)
+        multiplyClicks(3);
+    else
+        divideClicks(2);
+}
+
+function drainOverTime() {
+    const game = getGame();
+    const i = setInterval(() => {
+        game.setState(prev => ({ clicks: prev.clicks - 100 }));
+    }, 1000);
+    intervals.push(i);
+}
+
+function explodeClicks() { multiplyClicks(50); }
+function reverseClicks() { multiplyClicks(-1); }
+
+function freezeClicks() {
+    const game = getGame();
+    const value = game.state.clicks;
+    const i = setInterval(() => {
+        game.setState({ clicks: value });
+    }, 100);
+    intervals.push(i);
+}
+
+function chaoticMoney() { randomizeClicks(); }
+function massiveSpike() { modifyClicks(999999999); }
+function slowDecay() { drainOverTime(); }
+function fastDecay() { drainOverTime(); }
+function tripleRandom() { multiplyClicks(Math.random() * 3); }
+function halveRandom() { divideClicks(Math.random() * 5 + 1); }
+
+function percentageBoost(p) {
+    const game = getGame();
     game.setState(prev => ({
-        clicks: prev.clicks + amount
+        clicks: Math.floor(prev.clicks * (1 + p/100))
     }));
 }
 
-function setMoney(amount) {
-    if (!adminUnlocked) return;
+function prestigeBlast() {
     const game = getGame();
-    if (!game) return;
-
-    game.setState({ clicks: amount });
-}
-
-function maxMoney() {
-    if (!adminUnlocked) return;
-    setMoney(999999999999);
-}
-
-function halveMoney() {
-    if (!adminUnlocked) return;
-    const game = getGame();
-    if (!game) return;
-
     game.setState(prev => ({
-        clicks: Math.floor(prev.clicks / 2)
+        clicks: Math.floor(prev.clicks * 0.1),
+        upgrades: prev.upgrades.map(u => u + 50)
     }));
 }
 
-function doubleMoney() {
-    if (!adminUnlocked) return;
+function nanoBoost() { modifyClicks(100); }
+
+function maxUpgrades() {
     const game = getGame();
-    if (!game) return;
-
-    game.setState(prev => ({
-        clicks: prev.clicks * 2
-    }));
+    game.setState({ upgrades: game.state.upgrades.map(() => 9999) });
 }
 
-function randomMoney() {
-    if (!adminUnlocked) return;
-    setMoney(Math.floor(Math.random() * 100000000));
-}
-
-function stealMoney() {
-    if (!adminUnlocked) return;
+function wipeUpgrades() {
     const game = getGame();
-    if (!game) return;
-
-    game.setState(prev => ({
-        clicks: Math.floor(prev.clicks * 0.9)
-    }));
+    game.setState({ upgrades: game.state.upgrades.map(() => 0) });
 }
 
-function addPercentage(p) {
-    if (!adminUnlocked) return;
+function randomizeUpgrades() {
     const game = getGame();
-    if (!game) return;
-
-    game.setState(prev => ({
-        clicks: Math.floor(prev.clicks * (1 + p / 100))
-    }));
+    game.setState({
+        upgrades: game.state.upgrades.map(() => Math.floor(Math.random()*100))
+    });
 }
 
-function setNegative() {
-    if (!adminUnlocked) return;
-    setMoney(-1000);
-}
-
-function setToOne() {
-    if (!adminUnlocked) return;
-    setMoney(1);
-}
-
-// =============================
-// INFINITE MODS
-// =============================
-function toggleInfiniteMoney() {
-    if (!adminUnlocked) return;
+function duplicateUpgrades() {
     const game = getGame();
-    if (!game) return;
-
-    if (infiniteInterval) {
-        clearInterval(infiniteInterval);
-        infiniteInterval = null;
-    } else {
-        infiniteInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 10000
-            }));
-        }, 100);
-    }
+    game.setState({
+        upgrades: game.state.upgrades.map(u => u*2)
+    });
 }
 
-function toggleSlowInfinite() {
-    if (!adminUnlocked) return;
+function corruptUpgrades() { randomizeUpgrades(); }
+function boostUpgrades() { duplicateUpgrades(); }
+function drainUpgrades() { wipeUpgrades(); }
+function invertUpgrades() {
     const game = getGame();
-    if (!game) return;
-
-    if (slowInfiniteInterval) {
-        clearInterval(slowInfiniteInterval);
-        slowInfiniteInterval = null;
-    } else {
-        slowInfiniteInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 100
-            }));
-        }, 1000);
-    }
+    game.setState({
+        upgrades: game.state.upgrades.map(u => -u)
+    });
 }
+function spikeUpgrades() { maxUpgrades(); }
+function chaosUpgrades() { randomizeUpgrades(); }
 
-function toggleFastInfinite() {
-    if (!adminUnlocked) return;
+function speedGame(mult) {
     const game = getGame();
-    if (!game) return;
-
-    if (fastInfiniteInterval) {
-        clearInterval(fastInfiniteInterval);
-        fastInfiniteInterval = null;
-    } else {
-        fastInfiniteInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 50000
-            }));
-        }, 10);
-    }
+    game.props.updateInterval = 1000 / mult;
 }
 
-// =============================
-// CLICK MULTIPLIER
-// =============================
-function setClickMultiplier(mult) {
-    if (!adminUnlocked) return;
-    clickMultiplier = mult;
-}
-
-document.addEventListener("click", function() {
-    if (!adminUnlocked) return;
-    const game = getGame();
-    if (!game) return;
-
-    game.setState(prev => ({
-        clicks: prev.clicks + (clickMultiplier - 1)
-    }));
-});
-
-// =============================
-// AUTO CLICKERS
-// =============================
-function toggleAutoClicker() {
-    if (!adminUnlocked) return;
-    const game = getGame();
-    if (!game) return;
-
-    if (autoClickInterval) {
-        clearInterval(autoClickInterval);
-        autoClickInterval = null;
-    } else {
-        autoClickInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 1
-            }));
-        }, 100);
-    }
-}
-
-function toggleSuperAutoClicker() {
-    if (!adminUnlocked) return;
-    const game = getGame();
-    if (!game) return;
-
-    if (superAutoInterval) {
-        clearInterval(superAutoInterval);
-        superAutoInterval = null;
-    } else {
-        superAutoInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 50
-            }));
-        }, 10);
-    }
-}
-
-function toggleUltraAutoClicker() {
-    if (!adminUnlocked) return;
-    const game = getGame();
-    if (!game) return;
-
-    if (ultraAutoInterval) {
-        clearInterval(ultraAutoInterval);
-        ultraAutoInterval = null;
-    } else {
-        ultraAutoInterval = setInterval(() => {
-            game.setState(prev => ({
-                clicks: prev.clicks + 500
-            }));
-        }, 1);
-    }
-}
+function rapidFire() { modifyClicks(5000); }
+function superRapid() { modifyClicks(20000); }
+function ultraRapid() { modifyClicks(100000); }
+function tickStorm() { modifyClicks(1000000); }
+function timeWarp() { multiplyClicks(10); }
+function stutterMode() { divideClicks(2); }
