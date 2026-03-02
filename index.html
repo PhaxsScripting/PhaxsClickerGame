@@ -1,86 +1,79 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>Phaxs Clicker Game</title>
-  <style>
-  body {
-    background: linear-gradient(135deg, #1f1f1f, #121212);
-    font-family: Arial, sans-serif;
-  }
+    <meta charset="UTF-8">
+    <title>Phaxs Clicker Game</title>
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
 
-  button {
-    background: #ff9800;
-    border: none;
-    padding: 8px;
-    margin: 4px 0;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+        #adminPanel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #222;
+            padding: 15px;
+            border: 2px solid red;
+            display: none;
+            z-index: 9999;
+            width: 250px;
+        }
 
-  button:hover {
-    background: #ff5722;
-  }
-  </style>
+        #adminPanel input {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #adminPanel button {
+            width: 100%;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        #adminControls {
+            display: none;
+        }
+    </style>
 </head>
 
-  <!-- ADMIN PANEL -->
-<div id="adminPanel" style="
-display:none;
-position:fixed;
-top:20px;
-right:20px;
-background:#1e1e1e;
-color:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 0 20px rgba(0,0,0,0.6);
-z-index:9999;
-width:280px;
-font-family:Arial;
-">
+<body>
 
-<h3>Phaxs Admin Panel</h3>
+<h1>Phaxs Clicker</h1>
+<div id="content"></div>
 
-<input id="adminCodeInput" placeholder="Enter Secret Code"
-style="width:100%;padding:6px;margin-bottom:8px;border-radius:6px;border:none;">
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+    <h3>Admin Panel</h3>
 
-<button onclick="unlockAdmin()" style="width:100%;">Unlock</button>
+    <input type="password" id="adminCodeInput" placeholder="Enter Code">
+    <button onclick="unlockAdmin()">Unlock</button>
 
-<div id="adminControls" style="display:none;margin-top:12px;">
+    <div id="adminControls">
+        <hr>
 
-<button onclick="setMoney(1000000)">Set 1M Money</button>
-<button onclick="addMoney(50000)">Add 50K</button>
-<button onclick="toggleInfiniteMoney()">Infinite Money</button>
-<button onclick="setClickMultiplier(2)">Click x2</button>
-<button onclick="setClickMultiplier(10)">Click x10</button>
-<button onclick="setClickMultiplier(100)">Click x100</button>
-<button onclick="toggleOPAutoClicker()">OP AutoClicker</button>
-<button onclick="boostProduction()">Production x100</button>
+        <button onclick="addMoney(1000)">+1,000 Clicks</button>
+        <button onclick="addMoney(100000)">+100,000 Clicks</button>
 
-</div>
+        <button onclick="setMoney(0)">Reset Clicks</button>
+
+        <button onclick="toggleInfiniteMoney()">Toggle Infinite</button>
+
+        <button onclick="setClickMultiplier(10)">Click x10</button>
+        <button onclick="setClickMultiplier(100)">Click x100</button>
+
+        <button onclick="toggleOPAutoClicker()">OP AutoClicker</button>
+
+        <button onclick="boostProduction()">Boost Production</button>
+    </div>
 </div>
 
+<!-- IMPORTANT: Load bundle ONCE -->
 <script src="bundle.js"></script>
 <script src="admin.js"></script>
 
-<body>
-  <div id="content"></div>
-  <script src="bundle.js"></script>
-
-  <hr>
-  <p align="center"><a href="https://github.com/Elucidation/ClickerJs">View on Github</a></p>
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  
-    ga('create', 'UA-47993702-2', 'auto');
-    ga('send', 'pageview');
-  
-  </script>
 </body>
-
 </html>
