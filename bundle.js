@@ -216,6 +216,7 @@ var ClickerWindow = React.createClass({
   },
 
   componentDidMount: function () {
+    window.reactClicker = this; // expose React instance globally
     setInterval(this.updateClicks, this.props.updateInterval);
   },
 
