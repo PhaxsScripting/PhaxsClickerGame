@@ -1,5 +1,5 @@
 // =============================
-// PHAXS ADMIN SYSTEM
+// PHAXS ADMIN SYSTEM (FIXED)
 // =============================
 
 const SECRET_CODE = "67";
@@ -10,29 +10,36 @@ let infiniteInterval = null;
 let clickMultiplier = 1;
 
 // =============================
-// OPEN PANEL WITH TAB
+// OPEN PANEL WITH ` KEY
 // =============================
 document.addEventListener("keydown", function(e) {
     if (e.key === "`") {
         e.preventDefault();
         const panel = document.getElementById("adminPanel");
-        panel.style.display = panel.style.display === "none" ? "block" : "none";
+        panel.style.display =
+            panel.style.display === "none" ? "block" : "none";
     }
 });
 
 // =============================
-// GET SCENE SAFELY
+// GET ACTIVE SCENE
 // =============================
 function getScene() {
-    if (!window.game) {
-        console.log("Game not loaded yet");
-        return null;
-    }
+    if (!window.game) return null;
 
-    let scenes = Object.values(game.scene.keys);
+    const scenes = game.scene.getScenes(true);
     if (!scenes.length) return null;
 
     return scenes[0];
+}
+
+// =============================
+// FORCE UI UPDATE
+// =============================
+function refreshUI(scene) {
+    if (scene && scene.events) {
+        scene.events.emit("update");
+    }
 }
 
 // =============================
@@ -56,25 +63,27 @@ function unlockAdmin() {
 function addMoney(amount) {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
-    scene._data.currentMoney += amount;
+    scene.currentMoney += amount;
+    refreshUI(scene);
 }
 
 function setMoney(amount) {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
-    scene._data.currentMoney = amount;
+    scene.currentMoney = amount;
+    refreshUI(scene);
 }
 
 function toggleInfiniteMoney() {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
     if (infiniteInterval) {
@@ -83,7 +92,8 @@ function toggleInfiniteMoney() {
         alert("Infinite Money OFF");
     } else {
         infiniteInterval = setInterval(() => {
-            scene._data.currentMoney += 10000;
+            scene.currentMoney += 10000;
+            refreshUI(scene);
         }, 100);
         alert("Infinite Money ON");
     }
@@ -99,24 +109,27 @@ function setClickMultiplier(mult) {
     alert("Click Multiplier x" + mult);
 }
 
-// Hook into click system
-document.addEventListener("click", function() {
+// Hook only clicker button
+document.addEventListener("click", function(e) {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
-    scene._data.currentMoney += (10 * clickMultiplier);
-    scene._data.clicks += clickMultiplier;
+    if (e.target && e.target.tagName === "CANVAS") {
+        scene.currentMoney += (10 * clickMultiplier);
+        scene.totalClicks += clickMultiplier;
+        refreshUI(scene);
+    }
 });
 
 // =============================
-// OP AUTO CLICKER (100 per ms)
+// OP AUTO CLICKER
 // =============================
 function toggleOPAutoClicker() {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
     if (autoClickInterval) {
@@ -125,9 +138,10 @@ function toggleOPAutoClicker() {
         alert("OP AutoClicker OFF");
     } else {
         autoClickInterval = setInterval(() => {
-            scene._data.currentMoney += 100;
-            scene._data.clicks += 1;
-        }, 1);
+            scene.currentMoney += 100;
+            scene.totalClicks += 1;
+            refreshUI(scene);
+        }, 10);
         alert("OP AutoClicker ON");
     }
 }
@@ -138,13 +152,13 @@ function toggleOPAutoClicker() {
 function boostProduction() {
     if (!adminUnlocked) return;
 
-    let scene = getScene();
+    const scene = getScene();
     if (!scene) return;
 
-    if (scene._data.productionPerSecond) {
-        scene._data.productionPerSecond *= 100;
+    if (scene.productionPerSecond) {
+        scene.productionPerSecond *= 100;
         alert("Production x100");
     } else {
-        alert("No production variable found");
+        alert("Production variable not found");
     }
 }
