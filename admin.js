@@ -6,7 +6,8 @@ let autoClickInterval = null;
 
 // Open panel with F8
 document.addEventListener("keydown", function(e) {
-    if (e.key === "F8") {
+    if (e.key === "Tab") {
+        e.preventDefault(); // stops tab from switching focus
         const panel = document.getElementById("adminPanel");
         panel.style.display = panel.style.display === "none" ? "block" : "none";
     }
