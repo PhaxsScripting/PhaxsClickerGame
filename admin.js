@@ -1,22 +1,46 @@
-const SECRET_CODE = "PhaxIsTuff";
+// =============================
+// PHAXS ADMIN SYSTEM
+// =============================
+
+const SECRET_CODE = "67", "677";
 
 let adminUnlocked = false;
 let autoClickInterval = null;
-let infiniteMoney = false;
+let infiniteInterval = null;
 let clickMultiplier = 1;
-let productionMultiplier = 1;
 
-// Toggle panel with Tab
+// =============================
+// OPEN PANEL WITH TAB
+// =============================
 document.addEventListener("keydown", function(e) {
-    if (e.key === "Tab") {
+    if (e.key === "2") {
         e.preventDefault();
         const panel = document.getElementById("adminPanel");
         panel.style.display = panel.style.display === "none" ? "block" : "none";
     }
 });
 
+// =============================
+// GET SCENE SAFELY
+// =============================
+function getScene() {
+    if (!window.game) {
+        console.log("Game not loaded yet");
+        return null;
+    }
+
+    let scenes = Object.values(game.scene.keys);
+    if (!scenes.length) return null;
+
+    return scenes[0];
+}
+
+// =============================
+// UNLOCK
+// =============================
 function unlockAdmin() {
     const input = document.getElementById("adminCodeInput").value;
+
     if (input === SECRET_CODE) {
         adminUnlocked = true;
         document.getElementById("adminControls").style.display = "block";
@@ -26,60 +50,74 @@ function unlockAdmin() {
     }
 }
 
-// ===== MONEY CONTROLS =====
-
+// =============================
+// MONEY CONTROLS
+// =============================
 function addMoney(amount) {
     if (!adminUnlocked) return;
-    if (typeof money !== "undefined") {
-        money += amount;
-    }
+
+    let scene = getScene();
+    if (!scene) return;
+
+    scene._data.currentMoney += amount;
 }
 
 function setMoney(amount) {
     if (!adminUnlocked) return;
-    if (typeof money !== "undefined") {
-        money = amount;
-    }
+
+    let scene = getScene();
+    if (!scene) return;
+
+    scene._data.currentMoney = amount;
 }
 
 function toggleInfiniteMoney() {
     if (!adminUnlocked) return;
 
-    infiniteMoney = !infiniteMoney;
+    let scene = getScene();
+    if (!scene) return;
 
-    if (infiniteMoney) {
-        setInterval(() => {
-            if (typeof money !== "undefined") {
-                money += 10000;
-            }
+    if (infiniteInterval) {
+        clearInterval(infiniteInterval);
+        infiniteInterval = null;
+        alert("Infinite Money OFF");
+    } else {
+        infiniteInterval = setInterval(() => {
+            scene._data.currentMoney += 10000;
         }, 100);
         alert("Infinite Money ON");
-    } else {
-        alert("Infinite Money OFF (refresh to fully stop)");
     }
 }
 
-// ===== CLICK MULTIPLIERS =====
-
+// =============================
+// CLICK MULTIPLIER
+// =============================
 function setClickMultiplier(mult) {
     if (!adminUnlocked) return;
+
     clickMultiplier = mult;
-    alert("Click Multiplier set to x" + mult);
+    alert("Click Multiplier x" + mult);
 }
 
-// Override click behavior
+// Hook into click system
 document.addEventListener("click", function() {
     if (!adminUnlocked) return;
 
-    if (typeof money !== "undefined") {
-        money += (10 * clickMultiplier);
-    }
+    let scene = getScene();
+    if (!scene) return;
+
+    scene._data.currentMoney += (10 * clickMultiplier);
+    scene._data.clicks += clickMultiplier;
 });
 
-// ===== OP AUTO CLICKER =====
-
+// =============================
+// OP AUTO CLICKER (100 per ms)
+// =============================
 function toggleOPAutoClicker() {
     if (!adminUnlocked) return;
+
+    let scene = getScene();
+    if (!scene) return;
 
     if (autoClickInterval) {
         clearInterval(autoClickInterval);
@@ -87,18 +125,26 @@ function toggleOPAutoClicker() {
         alert("OP AutoClicker OFF");
     } else {
         autoClickInterval = setInterval(() => {
-            if (typeof money !== "undefined") {
-                money += 100;
-            }
-        }, 1); // 100 per millisecond
+            scene._data.currentMoney += 100;
+            scene._data.clicks += 1;
+        }, 1);
         alert("OP AutoClicker ON");
     }
 }
 
-// ===== GAME SPEED BOOST =====
-
+// =============================
+// PRODUCTION BOOST
+// =============================
 function boostProduction() {
     if (!adminUnlocked) return;
-    productionMultiplier = 100;
-    alert("Production x100");
+
+    let scene = getScene();
+    if (!scene) return;
+
+    if (scene._data.productionPerSecond) {
+        scene._data.productionPerSecond *= 100;
+        alert("Production x100");
+    } else {
+        alert("No production variable found");
+    }
 }
