@@ -1,5 +1,5 @@
 // =============================
-// PHAXS ADMIN SYSTEM (FIXED)
+// PHAXS ADMIN SYSTEM (React Compatible)
 // =============================
 
 const SECRET_CODE = "67";
@@ -10,36 +10,21 @@ let infiniteInterval = null;
 let clickMultiplier = 1;
 
 // =============================
-// OPEN PANEL WITH ` KEY
+// OPEN PANEL WITH TAB
 // =============================
 document.addEventListener("keydown", function(e) {
     if (e.key === "`") {
         e.preventDefault();
         const panel = document.getElementById("adminPanel");
-        panel.style.display =
-            panel.style.display === "none" ? "block" : "none";
+        panel.style.display = panel.style.display === "none" ? "block" : "none";
     }
 });
 
 // =============================
-// GET ACTIVE SCENE
+// GET REACT GAME INSTANCE
 // =============================
-function getScene() {
-    if (!window.game) return null;
-
-    const scenes = game.scene.getScenes(true);
-    if (!scenes.length) return null;
-
-    return scenes[0];
-}
-
-// =============================
-// FORCE UI UPDATE
-// =============================
-function refreshUI(scene) {
-    if (scene && scene.events) {
-        scene.events.emit("update");
-    }
+function getGame() {
+    return window.reactClicker || null;
 }
 
 // =============================
@@ -63,39 +48,42 @@ function unlockAdmin() {
 function addMoney(amount) {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
-    scene.currentMoney += amount;
-    refreshUI(scene);
+    game.setState({
+        clicks: game.state.clicks + amount
+    });
 }
 
 function setMoney(amount) {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
-    scene.currentMoney = amount;
-    refreshUI(scene);
+    game.setState({
+        clicks: amount
+    });
 }
 
 function toggleInfiniteMoney() {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
     if (infiniteInterval) {
         clearInterval(infiniteInterval);
         infiniteInterval = null;
-        alert("Infinite Money OFF");
+        alert("Infinite OFF");
     } else {
         infiniteInterval = setInterval(() => {
-            scene.currentMoney += 10000;
-            refreshUI(scene);
+            game.setState({
+                clicks: game.state.clicks + 10000
+            });
         }, 100);
-        alert("Infinite Money ON");
+        alert("Infinite ON");
     }
 }
 
@@ -104,23 +92,20 @@ function toggleInfiniteMoney() {
 // =============================
 function setClickMultiplier(mult) {
     if (!adminUnlocked) return;
-
     clickMultiplier = mult;
     alert("Click Multiplier x" + mult);
 }
 
-// Hook only clicker button
-document.addEventListener("click", function(e) {
+// Hook into clicks
+document.addEventListener("click", function() {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
-    if (e.target && e.target.tagName === "CANVAS") {
-        scene.currentMoney += (10 * clickMultiplier);
-        scene.totalClicks += clickMultiplier;
-        refreshUI(scene);
-    }
+    game.setState({
+        clicks: game.state.clicks + (clickMultiplier - 1)
+    });
 });
 
 // =============================
@@ -129,8 +114,8 @@ document.addEventListener("click", function(e) {
 function toggleOPAutoClicker() {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
     if (autoClickInterval) {
         clearInterval(autoClickInterval);
@@ -138,10 +123,10 @@ function toggleOPAutoClicker() {
         alert("OP AutoClicker OFF");
     } else {
         autoClickInterval = setInterval(() => {
-            scene.currentMoney += 100;
-            scene.totalClicks += 1;
-            refreshUI(scene);
-        }, 10);
+            game.setState({
+                clicks: game.state.clicks + 100
+            });
+        }, 1);
         alert("OP AutoClicker ON");
     }
 }
@@ -152,13 +137,12 @@ function toggleOPAutoClicker() {
 function boostProduction() {
     if (!adminUnlocked) return;
 
-    const scene = getScene();
-    if (!scene) return;
+    let game = getGame();
+    if (!game) return;
 
-    if (scene.productionPerSecond) {
-        scene.productionPerSecond *= 100;
-        alert("Production x100");
+    if (game.props.updateInterval) {
+        alert("Production boost active (visual only in this version)");
     } else {
-        alert("Production variable not found");
+        alert("No production variable found");
     }
 }
