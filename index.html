@@ -16,13 +16,13 @@ body {
     position: fixed;
     top: 10px;
     right: 10px;
-    width: 280px;
+    width: 300px;
     max-height: 90vh;
     overflow-y: auto;
     background: #1e1e1e;
     border: 2px solid #00ff99;
     padding: 10px;
-    display: none; /* 🔒 CLOSED BY DEFAULT */
+    display: none; /* CLOSED BY DEFAULT */
     z-index: 9999;
 }
 
@@ -51,7 +51,6 @@ body {
 <body>
 
 <h1>Phaxs Clicker</h1>
-
 <div id="content"></div>
 
 <!-- ADMIN PANEL -->
@@ -70,15 +69,48 @@ body {
 
 <div id="adminControls" style="display: none;">
 
+<!-- MONEY MODS -->
+<button onclick="addMoney(100)">+100</button>
 <button onclick="addMoney(1000)">+1K</button>
+<button onclick="addMoney(10000)">+10K</button>
 <button onclick="addMoney(100000)">+100K</button>
+<button onclick="addMoney(1000000)">+1M</button>
+<button onclick="addMoney(1000000000)">+1B</button>
 
-<button onclick="toggleInfiniteMoney()">Infinite Money</button>
+<button onclick="setMoney(0)">Set 0</button>
+<button onclick="maxMoney()">Max Money</button>
+<button onclick="halveMoney()">Halve Money</button>
+<button onclick="doubleMoney()">Double Money</button>
 
+<button onclick="randomMoney()">Random Money</button>
+<button onclick="stealMoney()">Steal 10%</button>
+<button onclick="addPercentage(25)">+25%</button>
+<button onclick="addPercentage(100)">+100%</button>
+
+<button onclick="setNegative()">Set Negative</button>
+<button onclick="setToOne()">Set To 1</button>
+
+<hr>
+
+<!-- INFINITE -->
+<button onclick="toggleInfiniteMoney()">Infinite</button>
+<button onclick="toggleSlowInfinite()">Slow Infinite</button>
+<button onclick="toggleFastInfinite()">Fast Infinite</button>
+
+<hr>
+
+<!-- CLICK MULTIPLIER -->
+<button onclick="setClickMultiplier(2)">Click x2</button>
 <button onclick="setClickMultiplier(10)">Click x10</button>
 <button onclick="setClickMultiplier(100)">Click x100</button>
+<button onclick="setClickMultiplier(1000)">Click x1000</button>
 
-<button onclick="toggleOPAutoClicker()">OP AutoClicker</button>
+<hr>
+
+<!-- AUTO CLICKERS -->
+<button onclick="toggleAutoClicker()">Auto Click</button>
+<button onclick="toggleSuperAutoClicker()">Super Auto</button>
+<button onclick="toggleUltraAutoClicker()">Ultra Auto</button>
 
 </div>
 
@@ -91,7 +123,8 @@ body {
 document.addEventListener("keydown", function(e){
     if(e.key === "`"){
         const panel = document.getElementById("adminPanel");
-        panel.style.display = panel.style.display === "block" ? "none" : "block";
+        panel.style.display =
+            panel.style.display === "block" ? "none" : "block";
     }
 });
 </script>
