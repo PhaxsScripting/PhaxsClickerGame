@@ -1,13 +1,15 @@
-// ===== SECRET CODE =====
-const SECRET_CODE = "PHAXS-ADMIN-2026";
+const SECRET_CODE = "PhaxIsTuff";
 
 let adminUnlocked = false;
 let autoClickInterval = null;
+let infiniteMoney = false;
+let clickMultiplier = 1;
+let productionMultiplier = 1;
 
-// Open panel with 2
+// Toggle panel with Tab
 document.addEventListener("keydown", function(e) {
-    if (e.key === "2") {
-        e.preventDefault(); // stops tab from switching focus
+    if (e.key === "Tab") {
+        e.preventDefault();
         const panel = document.getElementById("adminPanel");
         panel.style.display = panel.style.display === "none" ? "block" : "none";
     }
@@ -24,47 +26,79 @@ function unlockAdmin() {
     }
 }
 
-// ===== MODIFY THESE TO MATCH YOUR GAME VARIABLES =====
-
-// Example assumes global variable called money
-function setMoney(amount) {
-    if (!adminUnlocked) return;
-    money = amount;
-}
+// ===== MONEY CONTROLS =====
 
 function addMoney(amount) {
     if (!adminUnlocked) return;
-    money += amount;
+    if (typeof money !== "undefined") {
+        money += amount;
+    }
 }
 
-function setClickPower(power) {
+function setMoney(amount) {
     if (!adminUnlocked) return;
-    clickPower = power;
+    if (typeof money !== "undefined") {
+        money = amount;
+    }
 }
 
-function toggleAutoClicker() {
+function toggleInfiniteMoney() {
+    if (!adminUnlocked) return;
+
+    infiniteMoney = !infiniteMoney;
+
+    if (infiniteMoney) {
+        setInterval(() => {
+            if (typeof money !== "undefined") {
+                money += 10000;
+            }
+        }, 100);
+        alert("Infinite Money ON");
+    } else {
+        alert("Infinite Money OFF (refresh to fully stop)");
+    }
+}
+
+// ===== CLICK MULTIPLIERS =====
+
+function setClickMultiplier(mult) {
+    if (!adminUnlocked) return;
+    clickMultiplier = mult;
+    alert("Click Multiplier set to x" + mult);
+}
+
+// Override click behavior
+document.addEventListener("click", function() {
+    if (!adminUnlocked) return;
+
+    if (typeof money !== "undefined") {
+        money += (10 * clickMultiplier);
+    }
+});
+
+// ===== OP AUTO CLICKER =====
+
+function toggleOPAutoClicker() {
     if (!adminUnlocked) return;
 
     if (autoClickInterval) {
         clearInterval(autoClickInterval);
         autoClickInterval = null;
-        alert("AutoClicker OFF");
+        alert("OP AutoClicker OFF");
     } else {
         autoClickInterval = setInterval(() => {
-            money += 100; // change value here
-        }, 1); // 1ms interval
-        alert("AutoClicker ON");
+            if (typeof money !== "undefined") {
+                money += 100;
+            }
+        }, 1); // 100 per millisecond
+        alert("OP AutoClicker ON");
     }
 }
 
-function maxUpgrades() {
-    if (!adminUnlocked) return;
-    if (typeof upgrades !== "undefined") {
-        upgrades.forEach(u => u.level = 999);
-    }
-}
+// ===== GAME SPEED BOOST =====
 
-function resetGame() {
+function boostProduction() {
     if (!adminUnlocked) return;
-    money = 0;
+    productionMultiplier = 100;
+    alert("Production x100");
 }
