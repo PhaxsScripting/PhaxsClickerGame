@@ -2,7 +2,7 @@
 // PHAXS ADMIN SYSTEM
 // =============================
 
-const SECRET_CODE = "67", "677";
+const SECRET_CODE = "67";
 
 let adminUnlocked = false;
 let autoClickInterval = null;
@@ -13,7 +13,7 @@ let clickMultiplier = 1;
 // OPEN PANEL WITH TAB
 // =============================
 document.addEventListener("keydown", function(e) {
-    if (e.key === "2") {
+    if (e.key === "`") {
         e.preventDefault();
         const panel = document.getElementById("adminPanel");
         panel.style.display = panel.style.display === "none" ? "block" : "none";
