@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Phaxs Clicker Game</title>
-    <style>
-        body {
-            background: #111;
-            color: white;
-            font-family: Arial;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<title>Phaxs Clicker</title>
 
-        #adminPanel {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #222;
-            padding: 15px;
-            border: 2px solid red;
-            display: none;
-            z-index: 9999;
-            width: 250px;
-        }
+<style>
+body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
 
-        #adminPanel input {
-            width: 100%;
-            margin-bottom: 5px;
-        }
+#adminPanel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #1e1e1e;
+    border: 2px solid #00ff99;
+    padding: 10px;
+    display: none;
+    z-index: 9999;
+}
 
-        #adminPanel button {
-            width: 100%;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
+#adminPanel button {
+    width: 100%;
+    margin: 4px 0;
+    padding: 6px;
+    cursor: pointer;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+}
 
-        #adminControls {
-            display: none;
-        }
-    </style>
+#adminPanel button:hover {
+    background: #444;
+}
+</style>
 </head>
 
 <body>
@@ -45,35 +47,66 @@
 <h1>Phaxs Clicker</h1>
 <div id="content"></div>
 
-<!-- ADMIN PANEL -->
 <div id="adminPanel">
-    <h3>Admin Panel</h3>
+<h3>Admin Panel (Open)</h3>
 
-    <input type="password" id="adminCodeInput" placeholder="Enter Code">
-    <button onclick="unlockAdmin()">Unlock</button>
+<button onclick="addMoney(100)">+100</button>
+<button onclick="addMoney(1000)">+1K</button>
+<button onclick="addMoney(10000)">+10K</button>
+<button onclick="addMoney(100000)">+100K</button>
+<button onclick="addMoney(1000000)">+1M</button>
+<button onclick="addMoney(1000000000)">+1B</button>
 
-    <div id="adminControls">
-        <hr>
+<button onclick="setMoney(0)">Reset Money</button>
+<button onclick="maxMoney()">Max Money</button>
+<button onclick="halveMoney()">Halve Money</button>
+<button onclick="doubleMoney()">Double Money</button>
 
-        <button onclick="addMoney(1000)">+1,000 Clicks</button>
-        <button onclick="addMoney(100000)">+100,000 Clicks</button>
+<button onclick="toggleInfiniteMoney()">Infinite Money</button>
+<button onclick="toggleSlowInfinite()">Slow Infinite</button>
+<button onclick="toggleFastInfinite()">Fast Infinite</button>
 
-        <button onclick="setMoney(0)">Reset Clicks</button>
+<button onclick="setClickMultiplier(2)">Click x2</button>
+<button onclick="setClickMultiplier(10)">Click x10</button>
+<button onclick="setClickMultiplier(100)">Click x100</button>
+<button onclick="setClickMultiplier(1000)">Click x1000</button>
 
-        <button onclick="toggleInfiniteMoney()">Toggle Infinite</button>
+<button onclick="toggleAutoClicker()">Auto Click</button>
+<button onclick="toggleSuperAutoClicker()">Super Auto</button>
+<button onclick="toggleUltraAutoClicker()">Ultra Auto</button>
 
-        <button onclick="setClickMultiplier(10)">Click x10</button>
-        <button onclick="setClickMultiplier(100)">Click x100</button>
+<button onclick="buyAllUpgrades()">Buy All Upgrades</button>
+<button onclick="maxUpgrades()">Max Upgrades</button>
+<button onclick="resetUpgrades()">Reset Upgrades</button>
 
-        <button onclick="toggleOPAutoClicker()">OP AutoClicker</button>
+<button onclick="toggleProductionBoost()">Boost Production</button>
+<button onclick="maxProduction()">Max Production</button>
 
-        <button onclick="boostProduction()">Boost Production</button>
-    </div>
+<button onclick="randomMoney()">Random Money</button>
+<button onclick="stealMoney()">Steal 10%</button>
+<button onclick="addPercentage(25)">+25%</button>
+<button onclick="addPercentage(100)">+100%</button>
+
+<button onclick="setNegative()">Set Negative</button>
+<button onclick="setToOne()">Set To 1</button>
+
+<button onclick="wipeGame()">FULL RESET</button>
+
+<hr>
+<button onclick="togglePanel()">Close Panel</button>
+
 </div>
 
-<!-- IMPORTANT: Load bundle ONCE -->
 <script src="bundle.js"></script>
 <script src="admin.js"></script>
+
+<script>
+document.addEventListener("keydown", function(e){
+    if(e.key === "`"){
+        togglePanel();
+    }
+});
+</script>
 
 </body>
 </html>
