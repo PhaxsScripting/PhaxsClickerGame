@@ -22,7 +22,7 @@ body {
     background: #1e1e1e;
     border: 2px solid #00ff99;
     padding: 10px;
-    display: none; /* CLOSED BY DEFAULT */
+    display: none; 
     z-index: 9999;
 }
 
@@ -53,23 +53,19 @@ body {
 <h1>Phaxs Clicker</h1>
 <div id="content"></div>
 
-<!-- ADMIN PANEL -->
 <div id="adminPanel">
 
 <h3>Admin Panel</h3>
 
-<!-- ✅ PUBLIC RESET -->
 <button onclick="resetAll()">RESET ALL</button>
 
 <hr>
 
-<!-- 🔒 LOCKED SECTION -->
 <input type="password" id="adminCodeInput" placeholder="Enter Code">
 <button onclick="unlockAdmin()">Unlock Admin</button>
 
 <div id="adminControls" style="display: none;">
 
-<!-- MONEY MODS -->
 <button onclick="addMoney(100)">+100</button>
 <button onclick="addMoney(1000)">+1K</button>
 <button onclick="addMoney(10000)">+10K</button>
@@ -92,14 +88,12 @@ body {
 
 <hr>
 
-<!-- INFINITE -->
 <button onclick="toggleInfiniteMoney()">Infinite</button>
 <button onclick="toggleSlowInfinite()">Slow Infinite</button>
 <button onclick="toggleFastInfinite()">Fast Infinite</button>
 
 <hr>
 
-<!-- CLICK MULTIPLIER -->
 <button onclick="setClickMultiplier(2)">Click x2</button>
 <button onclick="setClickMultiplier(10)">Click x10</button>
 <button onclick="setClickMultiplier(100)">Click x100</button>
@@ -107,7 +101,6 @@ body {
 
 <hr>
 
-<!-- AUTO CLICKERS -->
 <button onclick="toggleAutoClicker()">Auto Click</button>
 <button onclick="toggleSuperAutoClicker()">Super Auto</button>
 <button onclick="toggleUltraAutoClicker()">Ultra Auto</button>
