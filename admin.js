@@ -4,9 +4,9 @@ const SECRET_CODE = "PHAXS-ADMIN-2026";
 let adminUnlocked = false;
 let autoClickInterval = null;
 
-// Open panel with F8
+// Open panel with 2
 document.addEventListener("keydown", function(e) {
-    if (e.key === "Tab") {
+    if (e.key === "2") {
         e.preventDefault(); // stops tab from switching focus
         const panel = document.getElementById("adminPanel");
         panel.style.display = panel.style.display === "none" ? "block" : "none";
