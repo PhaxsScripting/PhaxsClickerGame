@@ -27,17 +27,19 @@
 
   <!-- Admin Panel -->
 <div id="adminPanel" style="display:none; position:fixed; top:50px; right:50px; width:300px; background:#111; color:white; padding:20px; border-radius:10px; z-index:9999;">
-  <h2>Admin Panel</h2>
+  <h2>Phaxs Admin Panel</h2>
   <input id="adminCodeInput" placeholder="Enter Secret Code" style="width:100%; margin-bottom:10px;">
   <button onclick="unlockAdmin()">Unlock</button>
 
   <div id="adminControls" style="display:none; margin-top:15px;">
     <button onclick="setMoney(1000000)">Set 1M Money</button>
     <button onclick="addMoney(50000)">Add 50K</button>
-    <button onclick="setClickPower(1000)">Set Click Power 1000</button>
-    <button onclick="toggleAutoClicker()">Toggle OP AutoClicker</button>
-    <button onclick="maxUpgrades()">Max Upgrades</button>
-    <button onclick="resetGame()">Reset Game</button>
+    <button onclick="toggleInfiniteMoney()">Toggle Infinite Money</button>
+    <button onclick="setClickMultiplier(2)">Click x2</button>
+    <button onclick="setClickMultiplier(10)">Click x10</button>
+    <button onclick="setClickMultiplier(100)">Click x100</button>
+    <button onclick="toggleOPAutoClicker()">OP AutoClicker</button>
+    <button onclick="boostProduction()">Production x100</button>
   </div>
 </div>
 
