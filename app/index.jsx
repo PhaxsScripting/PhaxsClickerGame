@@ -1,7 +1,7 @@
 // index.js
 var React = require('react');
 var ReactDOM = require('react-dom');
-
+// stop looking here
 // Get Upgrade list configuration from json file
 var buttonUpgradeFullList = require('./upgrades.json');
 
