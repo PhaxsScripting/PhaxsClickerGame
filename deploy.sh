@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Start from master branch
 git checkout master
 
 # Create fresh dist/ folder
