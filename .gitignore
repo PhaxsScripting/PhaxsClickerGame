@@ -1,4 +1,3 @@
-# Ignore built bundle.js
 bundle.js
 
 # Ignore dist/ folder used for publishing to gh-pages branch
