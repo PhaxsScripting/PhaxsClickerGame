@@ -1,4 +1,4 @@
-const SECRET_CODE = "000000009999999999999999988888888hgfdsxcvhytgfvbhghygbjuyhjuyhgnjh";
+const SECRET_CODE = "";
 let adminUnlocked = false;
 let clickMultiplier = 1;
 let intervals = [];
