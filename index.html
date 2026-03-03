@@ -12,9 +12,20 @@ body {
     text-align: center;
 }
 
-#adminPanel {
+#adminToggle {
     position: fixed;
     top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    background: #00ff99;
+    border: none;
+    cursor: pointer;
+    z-index: 10000;
+}
+
+#adminPanel {
+    position: fixed;
+    top: 50px;
     right: 10px;
     width: 320px;
     max-height: 90vh;
@@ -49,6 +60,8 @@ body {
 </head>
 
 <body>
+
+<button id="adminToggle" onclick="toggleAdmin()">ADMIN</button>
 
 <h1>Phaxs Clicker</h1>
 <div id="content"></div>
@@ -117,13 +130,11 @@ body {
 <script src="admin.js"></script>
 
 <script>
-document.addEventListener("keydown", function(e){
-    if(e.key === "`"){
-        const panel = document.getElementById("adminPanel");
-        panel.style.display =
-            panel.style.display === "block" ? "none" : "block";
-    }
-});
+function toggleAdmin() {
+    const panel = document.getElementById("adminPanel");
+    panel.style.display =
+        panel.style.display === "block" ? "none" : "block";
+}
 </script>
 
 </body>
