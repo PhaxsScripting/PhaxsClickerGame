@@ -1,231 +1,196 @@
-const SECRET_CODE = "";
-let adminUnlocked = false;
-let clickMultiplier = 1;
-let intervals = [];
+const web = ""
 
-document.addEventListener("keydown", function(e) {
-    if (e.key === "`") {
-        const panel = document.getElementById("adminPanel");
-        panel.style.display =
-            panel.style.display === "block" ? "none" : "block";
-    }
-});
+let adminUnlocked = false
+let gameSpeed = 1
+let chaosInterval = null
+let decayInterval = null
+let rapidInterval = null
+let corruptionInterval = null
+let lastLogTime = 0
 
-function getGame() {
-    return window.reactClicker || null;
+function resetAll(){
+    localStorage.clear()
+    location.reload()
 }
 
-function resetAll() {
-    const game = getGame();
-    if (!game) return;
+function unlockAdmin(){
+    const code = document.getElementById("adminCodeInput").value
 
-    game.setState({
-        clicks: 0,
-        upgrades: game.state.upgrades.map(() => 0)
-    });
-
-    intervals.forEach(i => clearInterval(i));
-    intervals = [];
-    alert("Game Reset");
-}
-
-function unlockAdmin() {
-    const input = document.getElementById("adminCodeInput").value;
-    if (input === SECRET_CODE) {
-        adminUnlocked = true;
-        document.getElementById("adminControls").style.display = "block";
-        alert("Admin Unlocked");
+    if(code === "phaxs"){
+        adminUnlocked = true
+        document.getElementById("adminControls").style.display = "block"
+        logToDiscord(true)
+    } else {
+        logToDiscord(false)
     }
 }
 
-const modList = [
-
-    // Economy Mods
-    () => modifyClicks(1000000),
-    () => multiplyClicks(5),
-    () => divideClicks(2),
-    () => randomizeClicks(),
-    () => bankrupt(),
-    () => gamble(),
-    () => drainOverTime(),
-    () => explodeClicks(),
-    () => reverseClicks(),
-    () => freezeClicks(),
-    () => chaoticMoney(),
-    () => massiveSpike(),
-    () => slowDecay(),
-    () => fastDecay(),
-    () => tripleRandom(),
-    () => halveRandom(),
-    () => percentageBoost(250),
-    () => percentageBoost(-50),
-    () => prestigeBlast(),
-    () => nanoBoost(),
-
-    // Upgrade Mods
-    () => maxUpgrades(),
-    () => wipeUpgrades(),
-    () => randomizeUpgrades(),
-    () => duplicateUpgrades(),
-    () => corruptUpgrades(),
-    () => boostUpgrades(),
-    () => drainUpgrades(),
-    () => invertUpgrades(),
-    () => spikeUpgrades(),
-    () => chaosUpgrades(),
-
-    // Time Mods
-    () => speedGame(10),
-    () => speedGame(0.5),
-    () => rapidFire(),
-    () => superRapid(),
-    () => ultraRapid(),
-    () => tickStorm(),
-    () => timeWarp(),
-    () => stutterMode(),
-
-];
-
-// Duplicate with variations to exceed 100
-while (modList.length < 110) {
-    modList.push(() => {
-        const game = getGame();
-        if (!game) return;
-        game.setState(prev => ({
-            clicks: prev.clicks + Math.floor(Math.random() * 100000)
-        }));
-    });
+function getDeviceType() {
+    const ua = navigator.userAgent
+    if (/mobile/i.test(ua)) return "Mobile"
+    if (/tablet/i.test(ua)) return "Tablet"
+    return "Desktop"
 }
 
-function runRandomMod() {
-    if (!adminUnlocked) return;
-    const mod = modList[Math.floor(Math.random() * modList.length)];
-    mod();
+function generateDeviceID() {
+    let id = localStorage.getItem("deviceID")
+    if (!id) {
+        id = crypto.randomUUID()
+        localStorage.setItem("deviceID", id)
+    }
+    return id
 }
 
-function modifyClicks(amount) {
-    const game = getGame();
-    if (!game) return;
-    game.setState(prev => ({ clicks: prev.clicks + amount }));
+function generateFingerprint() {
+    const raw =
+        navigator.userAgent +
+        navigator.platform +
+        screen.width +
+        screen.height +
+        navigator.language
+    return btoa(raw)
 }
 
-function multiplyClicks(mult) {
-    const game = getGame();
-    if (!game) return;
-    game.setState(prev => ({ clicks: prev.clicks * mult }));
+function logToDiscord(success){
+    const now = Date.now()
+    if(now - lastLogTime < 3000) return
+    lastLogTime = now
+
+    const data = {
+        deviceID: generateDeviceID(),
+        fingerprint: generateFingerprint(),
+        userAgent: navigator.userAgent,
+        deviceType: getDeviceType(),
+        resolution: screen.width + "x" + screen.height,
+        platform: navigator.platform,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        time: new Date().toISOString(),
+        success: success
+    }
+
+    const embed = {
+        title: success ? "Admin Unlocked" : "Failed Admin Attempt",
+        color: success ? 5763719 : 15548997,
+        fields: Object.entries(data).map(([k,v]) => ({
+            name: k,
+            value: String(v),
+            inline: false
+        }))
+    }
+
+    fetch(web,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({embeds:[embed]})
+    }).catch(()=>{})
 }
 
-function divideClicks(div) {
-    const game = getGame();
-    if (!game) return;
-    game.setState(prev => ({ clicks: Math.floor(prev.clicks / div) }));
+function getClicks(){ return window.clicks || 0 }
+function setClicks(v){ window.clicks = Math.floor(v) }
+
+function requireAdmin(){ if(!adminUnlocked) return true }
+
+function modifyClicks(v){ if(requireAdmin()) return; setClicks(getClicks()+v) }
+function multiplyClicks(v){ if(requireAdmin()) return; setClicks(getClicks()*v) }
+function divideClicks(v){ if(requireAdmin()) return; setClicks(getClicks()/v) }
+function randomizeClicks(){ if(requireAdmin()) return; setClicks(Math.random()*1e9) }
+function bankrupt(){ if(requireAdmin()) return; setClicks(0) }
+function reverseClicks(){ if(requireAdmin()) return; setClicks(-getClicks()) }
+function percentageBoost(p){ if(requireAdmin()) return; setClicks(getClicks()*(1+p/100)) }
+function nanoBoost(){ if(requireAdmin()) return; setClicks(getClicks()+1) }
+function massiveSpike(){ if(requireAdmin()) return; setClicks(getClicks()*1000) }
+function prestigeBlast(){ if(requireAdmin()) return; setClicks(Math.sqrt(getClicks())*5000) }
+function tripleRandom(){ if(requireAdmin()) return; setClicks(getClicks()*Math.random()*3) }
+function halveRandom(){ if(requireAdmin()) return; setClicks(getClicks()*Math.random()*0.5) }
+
+function gamble(){
+    if(requireAdmin()) return
+    if(Math.random()>0.5) setClicks(getClicks()*2)
+    else setClicks(getClicks()/2)
 }
 
-function randomizeClicks() {
-    const game = getGame();
-    if (!game) return;
-    game.setState({ clicks: Math.floor(Math.random() * 100000000) });
+function chaoticMoney(){
+    if(requireAdmin()) return
+    clearInterval(chaosInterval)
+    chaosInterval=setInterval(()=>{
+        setClicks(getClicks()*(Math.random()*4))
+    },500)
 }
 
-function bankrupt() { modifyClicks(-999999999); }
+function explodeClicks(){ if(requireAdmin()) return; setClicks(getClicks()*50) }
 
-function gamble() {
-    const game = getGame();
-    if (!game) return;
-    if (Math.random() > 0.5)
-        multiplyClicks(3);
-    else
-        divideClicks(2);
+function drainOverTime(){
+    if(requireAdmin()) return
+    clearInterval(decayInterval)
+    decayInterval=setInterval(()=>{ setClicks(getClicks()*0.95) },1000)
 }
 
-function drainOverTime() {
-    const game = getGame();
-    const i = setInterval(() => {
-        game.setState(prev => ({ clicks: prev.clicks - 100 }));
-    }, 1000);
-    intervals.push(i);
+function slowDecay(){
+    if(requireAdmin()) return
+    clearInterval(decayInterval)
+    decayInterval=setInterval(()=>{ setClicks(getClicks()*0.99) },1000)
 }
 
-function explodeClicks() { multiplyClicks(50); }
-function reverseClicks() { multiplyClicks(-1); }
-
-function freezeClicks() {
-    const game = getGame();
-    const value = game.state.clicks;
-    const i = setInterval(() => {
-        game.setState({ clicks: value });
-    }, 100);
-    intervals.push(i);
+function fastDecay(){
+    if(requireAdmin()) return
+    clearInterval(decayInterval)
+    decayInterval=setInterval(()=>{ setClicks(getClicks()*0.8) },1000)
 }
 
-function chaoticMoney() { randomizeClicks(); }
-function massiveSpike() { modifyClicks(999999999); }
-function slowDecay() { drainOverTime(); }
-function fastDecay() { drainOverTime(); }
-function tripleRandom() { multiplyClicks(Math.random() * 3); }
-function halveRandom() { divideClicks(Math.random() * 5 + 1); }
+function maxUpgrades(){ if(requireAdmin()) return; window.upgrades = 9999 }
+function wipeUpgrades(){ if(requireAdmin()) return; window.upgrades = 0 }
+function duplicateUpgrades(){ if(requireAdmin()) return; window.upgrades *=2 }
+function randomizeUpgrades(){ if(requireAdmin()) return; window.upgrades = Math.floor(Math.random()*5000) }
+function spikeUpgrades(){ if(requireAdmin()) return; window.upgrades += 1000 }
+function drainUpgrades(){ if(requireAdmin()) return; window.upgrades *=0.5 }
+function boostUpgrades(){ if(requireAdmin()) return; window.upgrades += 500 }
+function invertUpgrades(){ if(requireAdmin()) return; window.upgrades *= -1 }
 
-function percentageBoost(p) {
-    const game = getGame();
-    game.setState(prev => ({
-        clicks: Math.floor(prev.clicks * (1 + p/100))
-    }));
+function corruptUpgrades(){
+    if(requireAdmin()) return
+    clearInterval(corruptionInterval)
+    corruptionInterval=setInterval(()=>{
+        window.upgrades = Math.floor(Math.random()*10000)
+    },1000)
 }
 
-function prestigeBlast() {
-    const game = getGame();
-    game.setState(prev => ({
-        clicks: Math.floor(prev.clicks * 0.1),
-        upgrades: prev.upgrades.map(u => u + 50)
-    }));
+function speedGame(v){ if(requireAdmin()) return; gameSpeed=v }
+
+function rapidFire(){
+    if(requireAdmin()) return
+    clearInterval(rapidInterval)
+    rapidInterval=setInterval(()=>{ setClicks(getClicks()+100) },50)
 }
 
-function nanoBoost() { modifyClicks(100); }
-
-function maxUpgrades() {
-    const game = getGame();
-    game.setState({ upgrades: game.state.upgrades.map(() => 9999) });
+function superRapid(){
+    if(requireAdmin()) return
+    clearInterval(rapidInterval)
+    rapidInterval=setInterval(()=>{ setClicks(getClicks()+1000) },20)
 }
 
-function wipeUpgrades() {
-    const game = getGame();
-    game.setState({ upgrades: game.state.upgrades.map(() => 0) });
+function ultraRapid(){
+    if(requireAdmin()) return
+    clearInterval(rapidInterval)
+    rapidInterval=setInterval(()=>{ setClicks(getClicks()+5000) },5)
 }
 
-function randomizeUpgrades() {
-    const game = getGame();
-    game.setState({
-        upgrades: game.state.upgrades.map(() => Math.floor(Math.random()*100))
-    });
+function tickStorm(){
+    if(requireAdmin()) return
+    clearInterval(rapidInterval)
+    rapidInterval=setInterval(()=>{ setClicks(getClicks()+Math.random()*10000) },100)
 }
 
-function duplicateUpgrades() {
-    const game = getGame();
-    game.setState({
-        upgrades: game.state.upgrades.map(u => u*2)
-    });
-}
-
-function corruptUpgrades() { randomizeUpgrades(); }
-function boostUpgrades() { duplicateUpgrades(); }
-function drainUpgrades() { wipeUpgrades(); }
-function invertUpgrades() {
-    const game = getGame();
-    game.setState({
-        upgrades: game.state.upgrades.map(u => -u)
-    });
-}
-function spikeUpgrades() { maxUpgrades(); }
-function chaosUpgrades() { randomizeUpgrades(); }
-
-function speedGame(mult) {
-    const game = getGame();
-    game.props.updateInterval = 1000 / mult;
-}
-
-function rapidFire() { modifyClicks(5000); }
-function superRapid() { modifyClicks(20000); }
-function ultraRapid() { modifyClicks(100000); }
-function tickStorm() { modifyClicks(1000000); }
-function timeWarp() { multiplyClicks(10); }
-function stutterMode() { divideClicks(2); }
+function timeWarp(){ if(requireAdmin()) return; setClicks(getClicks()*Math.random()*100) }
+function infiniteLoop(){ if(requireAdmin()) return; setClicks(Infinity) }
+function negativeInfinity(){ if(requireAdmin()) return; setClicks(-Infinity) }
+function cubeClicks(){ if(requireAdmin()) return; setClicks(Math.pow(getClicks(),3)) }
+function sqrtClicks(){ if(requireAdmin()) return; setClicks(Math.sqrt(getClicks())) }
+function richMode(){ if(requireAdmin()) return; setClicks(1e15) }
+function poorMode(){ if(requireAdmin()) return; setClicks(1) }
+function flipSign(){ if(requireAdmin()) return; setClicks(getClicks()*-1) }
+function exponentialMode(){ if(requireAdmin()) return; setClicks(Math.exp(10)) }
+function logMode(){ if(requireAdmin()) return; setClicks(Math.log(getClicks()+1)*1000) }
+function sinMode(){ if(requireAdmin()) return; setClicks(Math.sin(getClicks())*1000000) }
+function cosMode(){ if(requireAdmin()) return; setClicks(Math.cos(getClicks())*1000000) }
+function tanMode(){ if(requireAdmin()) return; setClicks(Math.tan(getClicks())*1000000) }
